@@ -6,7 +6,8 @@
 # Prerequisites: pom.xml and appropriate project structure should exist in the repository.
 
 image: maven:3.6.3
-
+clone:
+  depth: full    # SonarCloud scanner needs the full history to assign issues properly
 pipelines:
   default:
     - parallel:
@@ -15,7 +16,7 @@ pipelines:
           caches:
             - maven
           script:
-           - mvn -B verify --file pom.xml
+           - mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar 
            - pipe: sonarsource/sonarcloud-scan:2.0.0
              variables:
                  EXTRA_ARGS: -Dsonar.projectDescription=\"Project with sonarcloud-scan pipe\" -Dsonar.eslint.reportPaths=\"report.json\"
