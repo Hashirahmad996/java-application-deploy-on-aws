@@ -74,9 +74,8 @@
 <distributionManagement>
     <repository>
         <id>central</id>
-        <name>a0zd40cy3rn9b-artifactory-primary-0-releases</name>
-        <url>https://hashirahmad.jfrog.io/artifactory/maven-libs-release-local</url>
+        <name>a0o3chnwx49d0-artifactory-primary-0-releases</name>
+        <url>https://hashirahbar.jfrog.io/artifactory/maven-libs-release-local</url>
     </repository>
 </distributionManagement>
-
 </project>
