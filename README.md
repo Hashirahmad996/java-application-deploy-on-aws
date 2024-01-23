@@ -1,6 +1,6 @@
 # Project Overview
 
-![Project Architecture](url-to-your-image)
+![Project Architecture](3-Tier-Architecture.jpeg)
 
 This project aims to deploy a scalable, highly available, and secure Java application using a 3-tier Amazon Web Services (AWS) architecture. The architecture includes a Virtual Private Cloud (VPC) setup with separate networks for a Bastion Host, application servers, and essential components like Nginx, Tomcat, and a MySQL database.
 
