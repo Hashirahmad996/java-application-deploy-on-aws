@@ -20,7 +20,7 @@ This project aims to deploy a scalable, highly available, and secure Java applic
 
 The primary goal of this project is to showcase best practices in deploying and managing a Java application in a cloud environment. It demonstrates the use of various AWS services, automation tools, and CI/CD practices to achieve a secure, scalable, and highly available architecture. Developers and cloud enthusiasts can leverage this project to understand and implement similar setups for their applications.
 
-[![Reffer this for project overview]()](https://devopsrealtime.com/deploy-java-application-on-aws-3-tier-architecture/)
+[![Reffer this for project overview](click here)](https://devopsrealtime.com/deploy-java-application-on-aws-3-tier-architecture/)
 
 
 
