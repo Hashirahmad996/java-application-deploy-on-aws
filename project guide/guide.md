@@ -1,50 +1,46 @@
-> **Project guide**
->
-> **Pre-Deployment**
+# Project Overview
 
-Customize the application dependencies mentioned below on AWS EC2
-instance and create the Golden AMI.
+The goal of this project is to deploy a scalable, highly available, and secured Java application on a 3-tier architecture and provide application access to end users from the public internet.
 
-1.  AWS CLI
+## Pre-Requisites
 
-2.  Install Apache Web Server
+1. Create an AWS Free Tier account
+2. Create a Bitbucket account and a repository to keep your Java source code.
+3. Migrate this Java Source Code to your own Bitbucket repository. Refer to my solution [here](https://github.com/yemisi/Valaxytraining.git) on how to migrate Instructor’s repo.
+4. Create an account in Sonarcloud.
+5. Create an account in Jfrog cloud.
 
-3.  Install Git
+## Pre-Deployment
 
-4.  Cloudwatch Agent
+The instance used to create the custom images can be launched in the default VPC using Amazon Linux 2.
 
-5.  Push custom memory metrics to Cloudwatch.
+### 1. Create Global AMI
 
-6.  AWS SSM Agent
+1. **AWS CLI**: Installed by default on Amazon Linux 2 AMI.
+2. **CloudWatch agent**:
+    ```bash
+    sudo su
+    yum -y install amazon-cloudwatch-agent
+    systemctl status amazon-cloudwatch-agent.service
+    ```
+3. **Install AWS SSM agent**: Installed by default on Amazon Linux 2 AMI. Verify session manager access by attaching an IAM role with an AWS managed policy named `AmazonSSMFullAccess` (for testing purposes only) and connect from the EC2 AWS console.
 
-Numbers 1 & 6 are installed by default on AmazonLinux 2, so install the
-rest.
+### 2. Create Golden AMI using Global AMI for Nginx application
 
--   Launch an instance in a default VPC and run the following commands
+Launch a new instance using the Global AMI created in Task 1 and execute the following steps:
 
-sudo su
+1. **Install Nginx**:
+    ```bash
+    sudo su
+    amazon-linux-extras install -y nginx1
+    systemctl start nginx && systemctl enable nginx && systemctl status nginx
+    ```
+2. **Push custom memory metrics to Cloudwatch**:
+   - Pushing custom metrics requires installation and configuration of the CloudWatch agent.
+   - Execute the wizard below to configure the CloudWatch agent. Accept most of the defaults, exceptions can include selecting `cwagent` user or selecting the standard default metrics config when prompted.
+   ```bash
+   /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-config-wizard
 
-yum install -y httpd git
-
-yum install amazon-cloudwatch-agent -y
-
--   Run this Cloudwatch config wizard and select the defaults, but
-    > Ensure to select the memory option when prompted and the cwagent
-    > user
-
-/opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-config-wizard
-
--   Start the cloudwatch agent
-
-/opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a
-fetch-
-
-config -m ec2 -c file:/opt/aws/amazon-cloudwatch-agent/bin/config.json
--s
-
--   Verify the cloudWatch agent is running
-
-systemctl status amazon-cloudwatch-agent.service
 
 -   To Push custom memory metrics to Cloudwatch, attach an IAM role to
     > The instance with this AWS-managed policy named
