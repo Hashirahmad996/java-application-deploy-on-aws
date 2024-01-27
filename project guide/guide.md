@@ -6,9 +6,9 @@ The goal of this project is to deploy a scalable, highly available, and secured 
 
 1. Create an AWS Free Tier account
 2. Create a Bitbucket account and a repository to keep your Java source code.
-3. Migrate this Java Source Code to your own Bitbucket repository. Refer to my solution [here](https://github.com/yemisi/Valaxytraining.git) on how to migrate Instructor’s repo.
+3. Migrate this Java Source Code to your own Bitbucket repository.
 4. Create an account in Sonarcloud.
-5. Create an account in Jfrog cloud.
+5. Create an account in the Jfrog cloud.
 
 ## Pre-Deployment
 
