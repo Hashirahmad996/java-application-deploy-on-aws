@@ -140,7 +140,8 @@ generated](https://github.com/Hashirahmad996/java-application-deploy-on-aws/blob
    - Associate both VPCs to the Transit Gateway for private communication.
 
 6. **Create Internet Gateway for each VPC**:
-   - Update Public Subnet associated Route Table accordingly to route the default traffic to IGW for inbound/outbound internet connection.
+   - Update the Public Subnet associated Route Table accordingly to route the default traffic to IGW for inbound/outbound internet connection.
+
 ![Graphical user interface, text, and application Description automatically
 generated](https://github.com/Hashirahmad996/java-application-deploy-on-aws/blob/master/project%20guide/images/internet_gateways.PNG)
 
@@ -172,6 +173,7 @@ generated](https://github.com/Hashirahmad996/java-application-deploy-on-aws/blob
 VPC and Route tables should be created as follows:
 
 - **Bastion VPC**:
+  
 1 public subnet is created.
 ![Graphical user interface, text, and application Description automatically
 generated](https://github.com/Hashirahmad996/java-application-deploy-on-aws/blob/master/project%20guide/images/bastion_vpc_subnet.PNG)
@@ -195,7 +197,6 @@ Bastion Host is spun up in the Bastion VPC’s public subnet.
 generated](https://github.com/Hashirahmad996/java-application-deploy-on-aws/blob/master/project%20guide/images/bastion_ec2.PNG)
 
 - **App_VPC**:
-  VPC and Route tables should be created as follows:
   - 1 public subnet and various private subnets are created.
   - 2 AZs are used for high availability for tomcat and nginx instances.
   - Corresponding AZs (public and private) are required for NLBs to balance traffic.
@@ -207,6 +208,7 @@ Subnet CIDRs for both VPCs are created as described and shown in the screenshot 
 generated](https://github.com/Hashirahmad996/java-application-deploy-on-aws/blob/master/project%20guide/images/app_vpc_subnet.PNG)
 
 ***Route Tables***
+
   - 1 public route table for Public NLB.
   - At least 1 private route table for internal app, nginx, RDS, and NLB servers. (Note: Your solution may vary, my solution included 2 private route tables.)
 
