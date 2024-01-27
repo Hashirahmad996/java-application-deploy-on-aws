@@ -41,7 +41,7 @@ Launch a new instance using the Global AMI created in Task 1 and execute the fol
    ```bash
    /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-config-wizard
 
-3. **Start the CloudWatch agent specifying the JSON config file**:
+3. **Start the CloudWatch the agent specifying the JSON config file**:
   
    ```bash
    /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c file:/opt/aws/amazon-cloudwatch-agent/bin/config.json -s
@@ -52,11 +52,12 @@ Launch a new instance using the Global AMI created in Task 1 and execute the fol
    systemctl status amazon-cloudwatch-agent.service
 Once all dependencies are installed, create the AMI as shown below
 
-![Graphical user interface, text, application Description automatically
+![Project Architecture](project guide/images/AMI's.PNG)
+![Graphical user interface, text, and application Description automatically
 generated](project guide/images/AMI's.PNG){width="6.54548009623797in"
 height="1.4391666666666667in"}
 
-### 3. Create Golden AMI using Global AMI for Apache Tomcat application
+### 3. Create Golden AMI using Global AMI for the Apache Tomcat application
 
 Launch a new instance using the Global AMI created in Task 1 and execute the following steps:
 
