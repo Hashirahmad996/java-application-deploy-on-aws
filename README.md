@@ -20,35 +20,9 @@ This project aims to deploy a scalable, highly available, and secure Java applic
 
 The primary goal of this project is to showcase best practices in deploying and managing a Java application in a cloud environment. It demonstrates the use of various AWS services, automation tools, and CI/CD practices to achieve a secure, scalable, and highly available architecture. Developers and cloud enthusiasts can leverage this project to understand and implement similar setups for their applications.
 
-Refer to this for a project details [click here](https://devopsrealtime.com/deploy-java-application-on-aws-3-tier-architecture/)
+Refer to this for project details [click here](https://devopsrealtime.com/deploy-java-application-on-aws-3-tier-architecture/)
 
 
 
 
-Sample Java Login application uses "UserDB" database and Table schema to store the Employee Login details.
 
-How to see a list of Databases
-SHOW DATABASES;
-How to Create a Database
-CREATE DATABASE UserDB;
-How to List Tables
-USE UserDB;
-SHOW TABLES;
-How to Create Table
-Below is a Query to create the required TABLE schema to store Employee records
-CREATE TABLE Employee (
-  id int unsigned auto_increment not null,
-  first_name varchar(250),
-  last_name varchar(250),
-  email varchar(250),
-  username varchar(250),
-  password varchar(250),
-  Redgate timestamp,
-  primary key (id)
-);
-
-List Table data
-SELECT * FROM Employee;
-
-Describe Table schema
-DESCRIBE Employee;
