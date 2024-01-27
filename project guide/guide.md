@@ -122,8 +122,7 @@ Four custom AMIs should be created as shown below with commands above.
 
 
 ![Graphical user interface, text, and application Description automatically
-generated](https://github.com/Hashirahmad996/java-application-deploy-on-aws/blob/master/project%20guide/images/AMI's.PNG){width="6.54548009623797in"
-height="1.4391666666666667in"}
+generated](https://github.com/Hashirahmad996/java-application-deploy-on-aws/blob/master/project%20guide/images/AMI's.PNG)
 
 # VPC (Network Setup)
 
