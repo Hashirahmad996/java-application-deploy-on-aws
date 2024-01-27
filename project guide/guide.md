@@ -135,18 +135,20 @@ generated](https://github.com/Hashirahmad996/java-application-deploy-on-aws/blob
    
 4. **Create NAT Gateway in Public Subnet and update Private Subnet associated Route Table**:
    - Route the default traffic to NAT for outbound internet connection.
-   
+  
 5. **Create Transit Gateway**:
    - Associate both VPCs to the Transit Gateway for private communication.
 
 6. **Create Internet Gateway for each VPC**:
    - Update Public Subnet associated Route Table accordingly to route the default traffic to IGW for inbound/outbound internet connection.
+![Graphical user interface, text, and application Description automatically
+generated](https://github.com/Hashirahmad996/java-application-deploy-on-aws/blob/master/project%20guide/images/internet_gateways.PNG)
 
 ## Bastion
 
 1. **Deploy Bastion Host in the Public Subnet with EIP associated**.
 
-2. **Create Security Group allowing port 22 from public internet**.
+2. **Create a Security Group allowing port 22 from public internet**.
 
 ### AWS INFRASTRUCTURE SETUP SOLUTION
 
@@ -164,31 +166,17 @@ Create and attach IGW to both VPCs
 ![Graphical user interface, text, and application Description automatically
 generated](https://github.com/Hashirahmad996/java-application-deploy-on-aws/blob/master/project%20guide/images/internet_gateways.PNG)
 
-### Subnets CIDRs for both VPCs
 
-Subnet CIDRs for both VPCs are created as described and shown in the screenshot below:
-![Graphical user interface, text, and application Description automatically
-generated](https://github.com/Hashirahmad996/java-application-deploy-on-aws/blob/master/project%20guide/images/app_vpc_subnet.PNG)
+### VPC and Route Tables Configuration
 
-
+VPC and Route tables should be created as follows:
 
 - **Bastion VPC**:
-  - 1 public subnet is created.
+1 public subnet is created.
 ![Graphical user interface, text, and application Description automatically
 generated](https://github.com/Hashirahmad996/java-application-deploy-on-aws/blob/master/project%20guide/images/bastion_vpc_subnet.PNG)
 
-- **AppVPC**:
-  - 1 public subnet and various private subnets are created.
-  - 2 AZs are used for high availability for tomcat and nginx instances.
-  - Corresponding AZs (public and private) are required for NLBs to balance traffic.
-
-
-### Route Tables Configuration
-
-Route tables should be created as follows:
-
-- **Bastion VPC**:
-  - Bastion VPC needs only one route table which includes one public route to IGW, transit gateway, and local route.
+Bastion VPC needs only one route table which includes one public route to IGW, transit gateway, and local route.
   ![Graphical user interface, text, and application Description automatically
 generated](https://github.com/Hashirahmad996/java-application-deploy-on-aws/blob/master/project%20guide/images/bastion_vpc_public_route_table.PNG)
 
@@ -207,6 +195,18 @@ Bastion Host is spun up in the Bastion VPC’s public subnet.
 generated](https://github.com/Hashirahmad996/java-application-deploy-on-aws/blob/master/project%20guide/images/bastion_ec2.PNG)
 
 - **App_VPC**:
+  VPC and Route tables should be created as follows:
+  - 1 public subnet and various private subnets are created.
+  - 2 AZs are used for high availability for tomcat and nginx instances.
+  - Corresponding AZs (public and private) are required for NLBs to balance traffic.
+  
+### Subnets CIDRs for both VPCs
+
+Subnet CIDRs for both VPCs are created as described and shown in the screenshot below:
+![Graphical user interface, text, and application Description automatically
+generated](https://github.com/Hashirahmad996/java-application-deploy-on-aws/blob/master/project%20guide/images/app_vpc_subnet.PNG)
+
+***Route Tables***
   - 1 public route table for Public NLB.
   - At least 1 private route table for internal app, nginx, RDS, and NLB servers. (Note: Your solution may vary, my solution included 2 private route tables.)
 
@@ -284,6 +284,8 @@ generated](https://github.com/Hashirahmad996/java-application-deploy-on-aws/blob
 
 One S3 bucket was created for pulling the nginx config and tomcat log rotation script (referenced in launch template userdata).
 
+![Graphical user interface, text, and application Description automatically
+generated](https://github.com/Hashirahmad996/java-application-deploy-on-aws/blob/master/project%20guide/images/app_S3_bucket.PNG)
 
 
 # Maven (Build)
@@ -291,7 +293,7 @@ One S3 bucket was created for pulling the nginx config and tomcat log rotation s
 1. **Create EC2 instance using Maven Golden AMI:**
    - Launch a Maven instance in `prodVPC`, a private subnet, with a custom Maven AMI.
 
-2. **Clone Bitbucket repository to VSCode and update the `pom.xml` with Sonar and JFROG deployment details:**
+2. **Clone GitHub repository to VSCode and update the `pom.xml` with Sonar and JFROG deployment details:**
    ```bash
    git clone remote_url && cd java-login-app
    git branch feature
@@ -329,13 +331,13 @@ generated](https://github.com/Hashirahmad996/java-application-deploy-on-aws/blob
 generated](https://github.com/Hashirahmad996/java-application-deploy-on-aws/blob/master/project%20guide/images/application_propertise.PNG)
 
 
-5. **Push the code changes to the feature branch of the Bitbucket repository:**
+5. **Push the code changes to the feature branch of the GitHub repository:**
    ```bash
    git add. && git commit -m "All changes with pom and properties file"
    git push origin feature
 6. **Raise Pull Request to approve the PR and Merge the changes to the Master branch:**
 
-7. **Login to the EC2 instance and clone the Bitbucket repository:**
+7. **Login to the EC2 instance and clone the Github repository:**
    ```bash
    git clone remote_repo_url && cd java-login-app
 
@@ -396,6 +398,9 @@ To push metrics, access S3, and use session manager, the following AWS-managed p
 ![Graphical user interface, text, and application Description automatically
 generated](https://github.com/Hashirahmad996/java-application-deploy-on-aws/blob/master/project%20guide/images/I_AM_role_policy.PNG)
 
+![Graphical user interface, text, and application Description automatically
+generated](https://github.com/Hashirahmad996/java-application-deploy-on-aws/blob/master/project%20guide/images/iam_roles.PNG)
+
 3. **Create Auto Scaling Group:**
    - The ASG is configured as shown below
 ![Graphical user interface, text, and application Description automatically
@@ -447,12 +452,12 @@ generated](https://github.com/Hashirahmad996/java-application-deploy-on-aws/blob
      MySQL [UserDB]> CREATE TABLE Employee ( id int unsigned auto_increment not null, first_name varchar(250), last_name varchar(250), email varchar(250), username varchar(250), password varchar(250), regdate timestamp, primary key (id) );
      Query OK, 0 rows affected (0.09 sec)
      ```
-   - (Instructions are updated in the README.md file in the Bitbucket repo)
+   
 
 # Post-Deployment
 
 1. **Configure Cronjob to push the Tomcat Application log data to the S3 bucket and also rotate the log data to remove the log data on the server after the data is pushed to the S3 Bucket:**
-   - Tomcat Launch template was set with a daily cronjob to execute the following script to rotate log data. An alternative could be to define a tomcat config In '/etc/logrotate.d/tomcat' and use logrotate to rotate log files.
+   - The Tomcat Launch template was set with a daily cronjob to execute the following script to rotate log data. An alternative could be to define a tomcat config In '/etc/logrotate.d/tomcat' and use logrotate to rotate log files.
 ![Graphical user interface, text, and application Description automatically
 generated](https://github.com/Hashirahmad996/java-application-deploy-on-aws/blob/master/project%20guide/images/CroneJob.PNG)
 
