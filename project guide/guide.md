@@ -127,17 +127,19 @@ generated](https://github.com/Hashirahmad996/java-application-deploy-on-aws/blob
 # VPC (Network Setup)
 
 1. **Build VPC network (192.168.0.0/16) for Bastion Host deployment**:
-  
-
-2. **Build VPC network (172.32.0.0/16) for deploying Highly Available and Auto Scalable application servers**:
+   Create Bastion VPC with this basic configuration
    
-3. **Create NAT Gateway in Public Subnet and update Private Subnet associated Route Table**:
-   - Route the default traffic to NAT for outbound internet connection.
+   
 
-4. **Create Transit Gateway**:
+3. **Build VPC network (172.32.0.0/16) for deploying Highly Available and Auto Scalable application servers**:
+   
+4. **Create NAT Gateway in Public Subnet and update Private Subnet associated Route Table**:
+   - Route the default traffic to NAT for outbound internet connection.
+   
+5. **Create Transit Gateway**:
    - Associate both VPCs to the Transit Gateway for private communication.
 
-5. **Create Internet Gateway for each VPC**:
+6. **Create Internet Gateway for each VPC**:
    - Update Public Subnet associated Route Table accordingly to route the default traffic to IGW for inbound/outbound internet connection.
 
 ## Bastion
@@ -149,41 +151,60 @@ generated](https://github.com/Hashirahmad996/java-application-deploy-on-aws/blob
 ### AWS INFRASTRUCTURE SETUP SOLUTION
 
 Bastion and Prod VPC configuration is shown below with DNS hostnames enabled.
-![](vertopal_08cc382a976a4da3987706439f88ed12/media/image4.jpeg){width="6.497876202974628in"
-height="2.125in"}
+
+![Graphical user interface, text, and application Description automatically
+generated](https://github.com/Hashirahmad996/java-application-deploy-on-aws/blob/master/project%20guide/images/bastion_vpc.PNG)
 
 
 App_VPC configuration along with CIDR range is shown below
-
-![](vertopal_08cc382a976a4da3987706439f88ed12/media/image4.jpeg){width="6.497876202974628in"
-height="2.125in"}
+![Graphical user interface, text, and application Description automatically
+generated](https://github.com/Hashirahmad996/java-application-deploy-on-aws/blob/master/project%20guide/images/app_vpc.PNG)
 
 Create and attach IGW to both VPCs
-![](vertopal_08cc382a976a4da3987706439f88ed12/media/image4.jpeg){width="6.497876202974628in"
-height="2.125in"}
+![Graphical user interface, text, and application Description automatically
+generated](https://github.com/Hashirahmad996/java-application-deploy-on-aws/blob/master/project%20guide/images/internet_gateways.PNG)
 
 ### Subnets CIDRs for both VPCs
 
 Subnet CIDRs for both VPCs are created as described and shown in the screenshot below:
+![Graphical user interface, text, and application Description automatically
+generated](https://github.com/Hashirahmad996/java-application-deploy-on-aws/blob/master/project%20guide/images/app_vpc_subnet.PNG)
+
+
 
 - **Bastion VPC**:
   - 1 public subnet is created.
+![Graphical user interface, text, and application Description automatically
+generated](https://github.com/Hashirahmad996/java-application-deploy-on-aws/blob/master/project%20guide/images/bastion_vpc_subnet.PNG)
 
 - **AppVPC**:
   - 1 public subnet and various private subnets are created.
-  - 2 AZs are used for high availability for app and nginx instances.
+  - 2 AZs are used for high availability for tomcat and nginx instances.
   - Corresponding AZs (public and private) are required for NLBs to balance traffic.
 
-![A screenshot of a computer Description automatically
-generated](vertopal_08cc382a976a4da3987706439f88ed12/media/image5.jpeg){width="6.487962598425197in"
-height="2.6949989063867017in"}
 
 ### Route Tables Configuration
 
 Route tables should be created as follows:
 
 - **Bastion VPC**:
-  - 1 public route table with IGW.
+  - Bastion VPC needs only one route table which includes one public route to IGW, transit gateway, and local route.
+  ![Graphical user interface, text, and application Description automatically
+generated](https://github.com/Hashirahmad996/java-application-deploy-on-aws/blob/master/project%20guide/images/bastion_vpc_public_route_table.PNG)
+
+ The public subnet in bastion_VPC is associated with Its public route table as shown below
+ ![Graphical user interface, text, and application Description automatically
+generated](https://github.com/Hashirahmad996/java-application-deploy-on-aws/blob/master/project%20guide/images/bastion_vpc_public_routetable_subnet.PNG)
+
+SG rule for Bastion SG is restricted to a particular IP on port 22 as shown.
+
+ ![Graphical user interface, text, and application Description automatically
+generated](https://github.com/Hashirahmad996/java-application-deploy-on-aws/blob/master/project%20guide/images/bastion_security_group.PNG)
+
+
+Bastion Host is spun up in the Bastion VPC’s public subnet.
+ ![Graphical user interface, text, and application Description automatically
+generated](https://github.com/Hashirahmad996/java-application-deploy-on-aws/blob/master/project%20guide/images/bastion_ec2.PNG)
 
 - **App_VPC**:
   - 1 public route table for Public NLB.
@@ -191,100 +212,130 @@ Route tables should be created as follows:
 
 
 See private and public route table rules.
+![Graphical user interface, text, and application Description automatically
+generated](https://github.com/Hashirahmad996/java-application-deploy-on-aws/blob/master/project%20guide/images/route_tables.PNG)
 
-Note 3 route with targets for local, natgw and transit gw in private
-route table
+The Private route table in App_VPC should include a local route, a route to transit gw, and a route to natgw in a public subnet. For instance, natgw is required by the Tomcat application server to access artifacts from the Jfrog repository.
 
-![](vertopal_08cc382a976a4da3987706439f88ed12/media/image6.jpeg){width="6.48912510936133in"
-height="2.735in"}
+![Graphical user interface, text, and application Description automatically
+generated](https://github.com/Hashirahmad996/java-application-deploy-on-aws/blob/master/project%20guide/images/app_vpc_Private_RT_internalOnly.PNG)
 
-The Private route table in App_VPC should include a local route, a route to transit gw and route to natgw in public subnet. For instance natgw is required by Tomcat application server to access artificat from Jfrog repository.
+NAT Private Route-table in AppVPC
 
-![A screenshot of a computer Description automatically
-generated](vertopal_08cc382a976a4da3987706439f88ed12/media/image7.jpeg){width="6.49930227471566in"
-height="2.59in"}
+![Graphical user interface, text, and application Description automatically
+generated](https://github.com/Hashirahmad996/java-application-deploy-on-aws/blob/master/project%20guide/images/app_vpc_ptivate_natRoute_RT.PNG)
 
-Public Route table in Prod_Vpc should include routes to IGW, transit gw and local routes. This will be used by the public facing NLB
-![](vertopal_08cc382a976a4da3987706439f88ed12/media/image8.jpeg){width="6.494306649168854in"
-height="2.535in"}
+The public Route table in Prod_Vpc should include routes to IGW, transit gw, and local routes. This will be used by the public-facing NLB
 
-Bastion VPC needs only one route table which includes one public route to IGW, transit gateway and local route.
-![](vertopal_08cc382a976a4da3987706439f88ed12/media/image9.jpeg){width="6.493159448818898in"
-height="2.505in"}
+![Graphical user interface, text, and application Description automatically
+generated](https://github.com/Hashirahmad996/java-application-deploy-on-aws/blob/master/project%20guide/images/app_vpc_public_route_table.PNG) 
 
-Associate routes appropriately to previously created subnets for both VPCs. Public subnet in bastion_VPC is associated to Its public route table as shown below
-![](vertopal_08cc382a976a4da3987706439f88ed12/media/image10.jpeg){width="6.491324365704287in"
-height="2.91in"}
+
+
+Associate the public subnets to the public route table in prod_VPC
+
+![Graphical user interface, text, and application Description automatically
+generated](https://github.com/Hashirahmad996/java-application-deploy-on-aws/blob/master/project%20guide/images/app_vpc_public_routetable_subnet.PNG) 
 
 Associate all other private subnets to your private route table(s) in AppVPC.
 
+![Graphical user interface, text, and application Description automatically
+generated](https://github.com/Hashirahmad996/java-application-deploy-on-aws/blob/master/project%20guide/images/app_vpc_private_natRoute_subnet.PNG) 
 
-Using a Transit GW (TGW) provides a hub like solution for connecting VPCs or on-premise network to VPC. Create the TGW as shown below. Only the TGW name is required.
+![Graphical user interface, text, and application Description automatically
+generated](https://github.com/Hashirahmad996/java-application-deploy-on-aws/blob/master/project%20guide/images/app_vpc_private_RT_subnet.PNG) 
 
-![](vertopal_08cc382a976a4da3987706439f88ed12/media/image11.jpeg){width="6.489470691163604in"
-height="2.825in"}
+Using a Transit GW (TGW) provides a hub-like solution for connecting VPCs or on-premise networks to VPCs. 
 
-Two TGW attachments are required to connect both VPCs. Configuration of only Bastion TGW attachment is shown below. Similar configuration should be created for Prod_VPC TGW attachment
+Create the TGW as shown below. Only the TGW name is required.
 
-![A screenshot of a computer Description automatically
-generated](vertopal_08cc382a976a4da3987706439f88ed12/media/image12.jpeg){width="6.499340551181103in"
-height="2.7399989063867016in"}
+![Graphical user interface, text, and application Description automatically
+generated](https://github.com/Hashirahmad996/java-application-deploy-on-aws/blob/master/project%20guide/images/transit_gateway.PNG)
 
-After which a Transit GW default route table is auto populated with associations to TGW attachments to route traffic to both VPCs. Note route tables of ProdVPC subnet will also need to be updated for 2way communication.
+Two TGW attachments are required to connect both VPCs. Configuration of only Bastion TGW attachment is shown below. A similar configuration should be created for the Prod_VPC TGW attachment
 
-Security groups (SG) for Bastion, Tomcat, nginx and mysql RDS instance are shown below. Note that a security group can’t be associated with a NLB unlike an application load balancer.
+![Graphical user interface, text, and application Description automatically
+generated](https://github.com/Hashirahmad996/java-application-deploy-on-aws/blob/master/project%20guide/images/transit_gateway_attachment.PNG)
 
-RDS mysql SG only accepts traffic from Tomcat Application SG on port 3306
 
-SG rule for Bastion SG is restricted to a particular IP on port 22 as shown.
+
+Security groups (SG) for Bastion, Tomcat, nginx, and MySQL RDS instances are shown below. Note that a security group can’t be associated with a NLB, unlike an application load balancer.
+
+![Graphical user interface, text, and application Description automatically
+generated](https://github.com/Hashirahmad996/java-application-deploy-on-aws/blob/master/project%20guide/images/app_vpc_security_group.PNG)
+
+
+RDS MySQL SG only accepts traffic from Tomcat Application SG on port 3306
+
+![Graphical user interface, text, and application Description automatically
+generated](https://github.com/Hashirahmad996/java-application-deploy-on-aws/blob/master/project%20guide/images/app_vpc_mysql_security_group.PNG)
+
+
 
 Nginx SG port 80 inbound rule can be further restricted to VPC CIDR instead of accepting from anywhere as shown below
 
+![Graphical user interface, text, and application Description automatically
+generated](https://github.com/Hashirahmad996/java-application-deploy-on-aws/blob/master/project%20guide/images/app_vpc_nginx_security_group.PNG)
+
 Tomcat server SG port 8080 rule can also be restricted to local VPC CIDR
 
+![Graphical user interface, text, and application Description automatically
+generated](https://github.com/Hashirahmad996/java-application-deploy-on-aws/blob/master/project%20guide/images/app_vpc_tomcat_security_group.PNG)
 
-One S3 bucket was created for pulling nginx config and tomcat log rotation script (referenced in launch template userdata).
+One S3 bucket was created for pulling the nginx config and tomcat log rotation script (referenced in launch template userdata).
 
-Bastion Host is spinned up in the Bastion VPC’s public subnet.
 
 
 # Maven (Build)
 
 1. **Create EC2 instance using Maven Golden AMI:**
-   - Launch a Maven instance in `prodVPC`, private subnet, with a custom Maven AMI.
+   - Launch a Maven instance in `prodVPC`, a private subnet, with a custom Maven AMI.
 
 2. **Clone Bitbucket repository to VSCode and update the `pom.xml` with Sonar and JFROG deployment details:**
    ```bash
    git clone remote_url && cd java-login-app
    git branch feature
    git checkout feature
-     - Afterwards update the `pom.xml` with organization name and Sonar host URL.
+     - Afterwards, update the `pom.xml` with the organization name and Sonar host URL.
+![Graphical user interface, text, and application Description automatically
+generated](https://github.com/Hashirahmad996/java-application-deploy-on-aws/blob/master/project%20guide/images/Sonar_pom_config.PNG)
+
+
 
    - *For JFrog integration:*
      - Create a repository on JFrog.
      - Use the 'Quick Setup' option to generate deployment configuration.
      - Click 'set me up' for your 'local' type repo (e.g., 'assignment-libs-release-local').
-     - Click "deploy" tab on JFrog Web UI. This generates configuration to use at Maven to upload generated artifact to JFrog local repository.
-     - Afterwards, update the `pom.xml` file with generated `distributionManagement` config.
+     - Click the "Deploy" tab on JFrog Web UI. This generates configuration to use at Maven to upload generated artifacts to the JFrog local repository.
+     - Afterwards, update the `pom.xml` file with the generated `distributionManagement` config.
+![Graphical user interface, text, and application Description automatically
+generated](https://github.com/Hashirahmad996/java-application-deploy-on-aws/blob/master/project%20guide/images/Jfrog_pom_config.PNG)
 
-3. **Add `settings.xml` file to the root folder of the repository with the JFROG credentials and JFROG repo to resolve the dependencies:**
+
+3. **Add the `settings.xml` file to the root folder of the repository with the JFROG credentials and JFROG repo to resolve the dependencies:**
    - To generate `settings.xml`, use the 'Quick Setup' option in JFrog.
-   - Select ‘default-maven-virtual’ repo for downloading dependencies.
-   - Click 'configure' using ‘default-maven-virtual’ repo.
+   - Select the ‘default-maven’ repo for downloading dependencies.
+   - Click 'configure' using the ‘default-maven’ repo.
    - A settings configuration for Maven to connect to JFrog and download dependencies is auto-generated.
-   - Place configuration in `/root/.m2/settings.xml` file on Maven instance. `settings.xml` file should include credentials and reference to `default-maven-virtual` JFrog repo.
+   - Place configuration in the `/root/.m2/settings.xml` file on the Maven instance. The `settings.xml` file should include credentials and references to the `default-maven-virtual` JFrog repo.
+![Graphical user interface, text, and application Description automatically
+generated](https://github.com/Hashirahmad996/java-application-deploy-on-aws/blob/master/project%20guide/images/jfrog_settiing_config.PNG)
 
-4. **Update `application.properties` file with JDBC connection string to authenticate with MySQL:**
-   - Update `src/main/resources/application.properties` file with RDS endpoint name and connection credentials.
 
-5. **Push the code changes to the feature branch of Bitbucket repository:**
+4. **Update the `application.properties` file with the JDBC connection string to authenticate with MySQL:**
+   - Update the `src/main/resources/application.properties` file with the RDS endpoint name and connection credentials.
+   - 
+![Graphical user interface, text, and application Description automatically
+generated](https://github.com/Hashirahmad996/java-application-deploy-on-aws/blob/master/project%20guide/images/application_propertise.PNG)
+
+
+5. **Push the code changes to the feature branch of the Bitbucket repository:**
    ```bash
-   git add . && git commit -m "All changes with pom and properties file"
+   git add. && git commit -m "All changes with pom and properties file"
    git push origin feature
 6. **Raise Pull Request to approve the PR and Merge the changes to the Master branch:**
-   - Link below has information on how to raise and approve pull requests from the previous assignment: [GitHub Link](https://github.com/yemisi/Valaxytraining.git)
 
-7. **Login to EC2 instance and clone the Bitbucket repository:**
+7. **Login to the EC2 instance and clone the Bitbucket repository:**
    ```bash
    git clone remote_repo_url && cd java-login-app
 
@@ -292,31 +343,42 @@ Bastion Host is spinned up in the Bastion VPC’s public subnet.
    ```bash
    mvn -s ~/.m2/settings.xml deploy
 9. **Integrate Maven build with Sonar Cloud and generate an analysis dashboard with the default Quality Gate profile:**
-   - As stated in step 2, execute remaining instructions on the Maven instance.
+   - As stated in step 2, execute the remaining instructions on the Maven instance.
    - Export the environment variable and run `mvn verify` command:
      ```bash
      export SONAR_TOKEN=xxxxxxxxx
      mvn verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=assignment5
      ```
    - Analysis dashboard with a quality gate.
+  
+   ![Graphical user interface, text, and application Description automatically
+generated](https://github.com/Hashirahmad996/java-application-deploy-on-aws/blob/master/project%20guide/images/SonarCloud.PNG)
+
 # Database (RDS)
 
 1. **Deploy Multi-AZ MySQL RDS instance into private subnets:**
-   - This was implemented as a standalone with Free tier for cost savings.
+   - This was implemented as a standalone with a Free tier for cost savings.
    - Note VPC, security group, and subnets selected.
-   - Endpoint name was auto-generated.
+   The endpoint name was auto-generated.
+![Graphical user interface, text, and application Description automatically
+generated](https://github.com/Hashirahmad996/java-application-deploy-on-aws/blob/master/project%20guide/images/app_RDB.PNG)
 
-2. Create Security Group allowing port 3306 from App instances and from Bastion Host.
-
+2. Create a Security Group allowing port 3306 from App instances and Bastion Host.
+![Graphical user interface, text, and application Description automatically
+generated](https://github.com/Hashirahmad996/java-application-deploy-on-aws/blob/master/project%20guide/images/app_vpc_mysql_security_group.PNG)
 
 # Tomcat (Backend)
 
 1. **Create private-facing Network Load Balancer and Target Group:**
-   - The internal NLB listens on port 8080 and forwards to App Target group.
+   - The internal NLB listens on port 8080 and forwards to the App Target group.
 
+![Graphical user interface, text, and application Description automatically
+generated](https://github.com/Hashirahmad996/java-application-deploy-on-aws/blob/master/project%20guide/images/app_tomcat_load_balancer_listner.PNG)
 
-App Target group is set to listen on port 8080, since tomcat listens on same port by default
+App Target group is set to listen on port 8080 since Tomcat listens on the same port by default
 
+![Graphical user interface, text, and application Description automatically
+generated](https://github.com/Hashirahmad996/java-application-deploy-on-aws/blob/master/project%20guide/images/app_target_groups.PNG)
 
 
 2. **Create Launch Configuration with the following configuration:**
@@ -324,43 +386,60 @@ App Target group is set to listen on port 8080, since tomcat listens on same por
    2. User Data to deploy .war artifact from JFROG into webapps folder.
    3. Security Group allowing Port 22 from Bastion Host and Port 8080 from private NLB.
 
-   - When creating the launch config/template, specify the Tomcat golden AMI, keypair, App-SG, and user data, which downloads JFROG artifact and specifies a cronjob script to rotate log files to S3.
-   - Launch Template must have IAM role for S3, SSM, and for CloudWatch agent to push custom metrics.
+   - When creating the launch config/template, specify the Tomcat golden AMI, keypair, App-SG, and user data, which downloads the JFROG artifact and specifies a cronjob script to rotate log files to S3.
+   - Launch Template must have an IAM role for S3, SSM, and for CloudWatch agent to push custom metrics.
 
+![Graphical user interface, text, and application Description automatically
+generated](https://github.com/Hashirahmad996/java-application-deploy-on-aws/blob/master/project%20guide/images/LT.PNG)
 
-To push metrics, access S3 and use session manager, the following AWS managed polices attached to a IAM role was used in both Launch templates for Nginx and Tomcat
+To push metrics, access S3, and use session manager, the following AWS-managed policies attached to an IAM role were used in both Launch templates for Nginx and Tomcat
+![Graphical user interface, text, and application Description automatically
+generated](https://github.com/Hashirahmad996/java-application-deploy-on-aws/blob/master/project%20guide/images/I_AM_role_policy.PNG)
 
 3. **Create Auto Scaling Group:**
    - The ASG is configured as shown below
+![Graphical user interface, text, and application Description automatically
+generated](https://github.com/Hashirahmad996/java-application-deploy-on-aws/blob/master/project%20guide/images/app_auto_scaling_group.PNG)
 
 # Nginx (Frontend)
 
 1. **Create public-facing Network Load Balancer and Target Group:**
    - Nginx target group is set to port 80 since Nginx listens on port 80.
 
+![Graphical user interface, text, and application Description automatically
+generated](https://github.com/Hashirahmad996/java-application-deploy-on-aws/blob/master/project%20guide/images/app_nginx_load_balancer_lisner.PNG)
+
+
 
 2. **Create Launch Configuration with the following configuration:**
    1. Nginx Golden AMI
-   2. User Data to update `proxy_pass` rules in `nginx.conf` file and reload Nginx service.
+   2. User Data to update `proxy_pass` rules in `nginx.conf` file and reload the Nginx service.
    3. Security Group allowing Port 22 from Bastion Host and Port 80 from Public NLB.
 
-   - The userdata in the Nginx launch template below downloads a modified default nginx config file from S3. An alternative solution can edit the nginx config file in place using the `sed` command. I think the former is simpler.
+   - The userdata in the Nginx launch template below downloads a modified default Nginx config file from S3. An alternative solution can edit the nginx config file in place using the `sed` command. I think the former is simpler.
+
+![Graphical user interface, text, and application Description automatically
+generated](https://github.com/Hashirahmad996/java-application-deploy-on-aws/blob/master/project%20guide/images/app_nginx_launch_tmp.PNG)
+
+
+Nginx.conf file is updated in the server block with the following directive
 
  3. **Create Auto Scaling Group:**  
  
+![Graphical user interface, text, and application Description automatically
+generated](https://github.com/Hashirahmad996/java-application-deploy-on-aws/blob/master/project%20guide/images/app_auto_scaling_group.PNG)
 
-Nginx.conf file is updated in the server block with the following directive
 
 
 # Application Deployment
 
-1. **Artifact deployment taken care by User Data script during Application tier EC2 instance launch process.**
+1. **Artifact deployment taken care of by User Data script during Application tier EC2 instance launch process.**
 
 2. **Login to MySQL database from Application Server using MySQL CLI client and create database and table schema to store the user login data:**
    - Login to tomcat server, install MySQL client, and configure DB schema:
      ```bash
      # yum install mysql -y
-     # mysql -u admin -p -h valaxy-db-1.cqsqkkkpnzxm.us-east-1.rds.amazonaws.com
+     # mysql -u admin -p -h database-1.cqsqkkkpnzxm.us-east-1.rds.amazonaws.com
      Enter password:
      MySQL [(none)]> CREATE DATABASE UserDB;
      MySQL [(none)]> use UserDB;
@@ -368,20 +447,23 @@ Nginx.conf file is updated in the server block with the following directive
      MySQL [UserDB]> CREATE TABLE Employee ( id int unsigned auto_increment not null, first_name varchar(250), last_name varchar(250), email varchar(250), username varchar(250), password varchar(250), regdate timestamp, primary key (id) );
      Query OK, 0 rows affected (0.09 sec)
      ```
-   - (Instructions are updated in README.md file in the Bitbucket repo)
+   - (Instructions are updated in the README.md file in the Bitbucket repo)
 
 # Post-Deployment
 
-1. **Configure Cronjob to push the Tomcat Application log data to S3 bucket and also rotate the log data to remove the log data on the server after the data pushed to S3 Bucket:**
-   - Tomcat Launch template was set with daily cronjob to execute the following script to rotate log data. An alternative could be to define a tomcat config In '/etc/logrotate.d/tomcat' and use logrotate to rotate log files.
+1. **Configure Cronjob to push the Tomcat Application log data to the S3 bucket and also rotate the log data to remove the log data on the server after the data is pushed to the S3 Bucket:**
+   - Tomcat Launch template was set with a daily cronjob to execute the following script to rotate log data. An alternative could be to define a tomcat config In '/etc/logrotate.d/tomcat' and use logrotate to rotate log files.
+![Graphical user interface, text, and application Description automatically
+generated](https://github.com/Hashirahmad996/java-application-deploy-on-aws/blob/master/project%20guide/images/CroneJob.PNG)
 
-2. **Configure CloudWatch alarms to send E-Mail notification when database connections are more than 100 threshold.**
+2. **Configure CloudWatch alarms to send E-Mail notifications when database connections are more than 100 threshold.**
+
 
 # Validation
 
-1. **Verify you, as an administrator, are able to login to EC2 instances from session manager & from Bastion Host:**
+1. **Verify you, as an administrator, can login to EC2 instances from the session manager & Bastion Host:**
    - SSH forwarding was used to access Nginx and App instances from the bastion host.
-   - Start SSH agent and add the key you want to forward to the agent:
+   - Start the SSH agent and add the key you want to forward to the agent:
      ```bash
      $ eval "$(ssh-agent)"
      Agent pid 83448
@@ -389,13 +471,16 @@ Nginx.conf file is updated in the server block with the following directive
      ```
    - Confirmed access to Tomcat instance from the bastion.
 
-Session Manager access for Nginx aided with IAM role defined in launch template
-Session Manager access for Tomcat aided with IAM role defined in launch template
+Session Manager access for Nginx aided with the IAM role defined in the launch template
+Session Manager access for Tomcat aided with the IAM role defined in the launch template
 
 
 
-2. **Verify if you, as an end user, are able to access the application from the public internet browser:**
-   - Custom domain was used to complete the setup.
-   - Here is the Route 53 alias record to the public NLB.
+2. **Verify if you, as an end user, can access the application from the public internet browser:**
+  
 
-Following user “UserDB” successfully registered via the website
+The following user “UserDB” successfully registered via the website
+![Graphical user interface, text, and application Description automatically
+generated](https://github.com/Hashirahmad996/java-application-deploy-on-aws/blob/master/project%20guide/images/DB_check.PNG)
+
+
