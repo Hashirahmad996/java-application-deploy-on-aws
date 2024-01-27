@@ -52,10 +52,6 @@ Launch a new instance using the Global AMI created in Task 1 and execute the fol
    systemctl status amazon-cloudwatch-agent.service
 Once all dependencies are installed, create the AMI as shown below
 
-![Project Architecture](https://github.com/Hashirahmad996/java-application-deploy-on-aws/blob/master/project%20guide/images/AMI's.PNG)
-![Graphical user interface, text, and application Description automatically
-generated](https://github.com/Hashirahmad996/java-application-deploy-on-aws/blob/master/project%20guide/images/AMI's.PNG){width="6.54548009623797in"
-height="1.4391666666666667in"}
 
 ### 3. Create Golden AMI using Global AMI for the Apache Tomcat application
 
@@ -128,6 +124,9 @@ Four custom AMIs should be created as shown below with commands above.
 generated](project guide/images/AMI's.PNG){width="6.54548009623797in"
 height="1.4391666666666667in"}
 
+![Graphical user interface, text, and application Description automatically
+generated](https://github.com/Hashirahmad996/java-application-deploy-on-aws/blob/master/project%20guide/images/AMI's.PNG){width="6.54548009623797in"
+height="1.4391666666666667in"}
 
 # VPC (Network Setup)
 
