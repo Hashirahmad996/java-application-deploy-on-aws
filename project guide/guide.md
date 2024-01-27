@@ -127,17 +127,19 @@ generated](https://github.com/Hashirahmad996/java-application-deploy-on-aws/blob
 # VPC (Network Setup)
 
 1. **Build VPC network (192.168.0.0/16) for Bastion Host deployment**:
-  
-
-2. **Build VPC network (172.32.0.0/16) for deploying Highly Available and Auto Scalable application servers**:
+   Create Bastion VPC with this basic configuration
    
-3. **Create NAT Gateway in Public Subnet and update Private Subnet associated Route Table**:
-   - Route the default traffic to NAT for outbound internet connection.
+   
 
-4. **Create Transit Gateway**:
+3. **Build VPC network (172.32.0.0/16) for deploying Highly Available and Auto Scalable application servers**:
+   
+4. **Create NAT Gateway in Public Subnet and update Private Subnet associated Route Table**:
+   - Route the default traffic to NAT for outbound internet connection.
+   
+5. **Create Transit Gateway**:
    - Associate both VPCs to the Transit Gateway for private communication.
 
-5. **Create Internet Gateway for each VPC**:
+6. **Create Internet Gateway for each VPC**:
    - Update Public Subnet associated Route Table accordingly to route the default traffic to IGW for inbound/outbound internet connection.
 
 ## Bastion
@@ -149,26 +151,28 @@ generated](https://github.com/Hashirahmad996/java-application-deploy-on-aws/blob
 ### AWS INFRASTRUCTURE SETUP SOLUTION
 
 Bastion and Prod VPC configuration is shown below with DNS hostnames enabled.
-![](vertopal_08cc382a976a4da3987706439f88ed12/media/image4.jpeg){width="6.497876202974628in"
-height="2.125in"}
+
 
 
 App_VPC configuration along with CIDR range is shown below
 
-![](vertopal_08cc382a976a4da3987706439f88ed12/media/image4.jpeg){width="6.497876202974628in"
-height="2.125in"}
 
 Create and attach IGW to both VPCs
-![](vertopal_08cc382a976a4da3987706439f88ed12/media/image4.jpeg){width="6.497876202974628in"
-height="2.125in"}
+![Graphical user interface, text, and application Description automatically
+generated](https://github.com/Hashirahmad996/java-application-deploy-on-aws/blob/master/project%20guide/images/internet_gateways.PNG)
 
 ### Subnets CIDRs for both VPCs
 
 Subnet CIDRs for both VPCs are created as described and shown in the screenshot below:
+![Graphical user interface, text, and application Description automatically
+generated](https://github.com/Hashirahmad996/java-application-deploy-on-aws/blob/master/project%20guide/images/app_vpc_subnet.PNG)
+
+
 
 - **Bastion VPC**:
   - 1 public subnet is created.
-
+![Graphical user interface, text, and application Description automatically
+generated](https://github.com/Hashirahmad996/java-application-deploy-on-aws/blob/master/project%20guide/images/bastion_vpc_subnet.PNG)
 - **AppVPC**:
   - 1 public subnet and various private subnets are created.
   - 2 AZs are used for high availability for app and nginx instances.
