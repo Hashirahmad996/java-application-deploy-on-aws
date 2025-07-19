@@ -22,7 +22,7 @@ The primary goal of this project is to showcase best practices in deploying and 
 
 Here's your content converted into a well-structured **Markdown (.md)** file format:
 
-```markdown
+
 # Goal
 
 The goal of this project is to deploy a scalable, highly available, and secured Java application on a 3-tier architecture and provide application access to end users from the public internet.
@@ -173,11 +173,6 @@ mvn clean install -s settings.xml
 - ✅ Verify **User access** via:
 - Public browser access to application
 
-```
-
-You can copy this and save it as `README.md` or any `.md` file.
-
-Would you like me to generate an `.md` file or a downloadable version as well?
 
 
 
